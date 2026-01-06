@@ -13,7 +13,6 @@ import { useGeolocation } from "@/hooks/useGeolocation";
 export default function HomePage() {
   const [city, setCity] = useState<string>("");
   const [units, setUnits] = useState<"metric" | "imperial">("metric");
-  const [page, setPage] = useState<number>(1);
 
   // ✅ CORRECT: hook at top level
   useGeolocation(setCity);
@@ -39,7 +38,7 @@ export default function HomePage() {
         </>
       )}
 
-      <CityTable page={page} setPage={setPage} />
+      <CityTable/>
     </main>
   );
 }

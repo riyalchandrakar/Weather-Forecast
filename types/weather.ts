@@ -29,3 +29,8 @@ export interface ForecastResponse {
     }[];
   }[];
 }
+
+export interface WeatherApiResponse {
+  current: WeatherResponse;
+  forecast: ForecastResponse;
+}

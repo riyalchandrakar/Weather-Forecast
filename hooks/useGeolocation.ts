@@ -20,5 +20,5 @@ export function useGeolocation(setCity: (city: string) => void) {
         setCity("Delhi"); // fallback
       }
     );
-  }, []);
+  }, [setCity]);
 }
