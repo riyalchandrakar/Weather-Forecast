@@ -1,3 +1,6 @@
+// Temperature units supported by OpenWeather
+export type Units = "metric" | "imperial";
+
 export interface WeatherResponse {
   name: string;
   main: {
@@ -17,7 +20,12 @@ export interface WeatherResponse {
 export interface ForecastResponse {
   list: {
     dt_txt: string;
-    main: { temp: number };
-    weather: { main: string; icon: string }[];
+    main: {
+      temp: number;
+    };
+    weather: {
+      main: string;
+      icon: string;
+    }[];
   }[];
 }

@@ -2,13 +2,15 @@
 
 import ThemeToggle from "./ThemeToggle";
 import UnitToggle from "./UnitToggle";
+import { Units } from "@/types/weather";
+import React from "react";
 
 export default function Header({
   units,
   setUnits,
 }: {
-  units: string;
-  setUnits: (u: string) => void;
+  units: Units;
+  setUnits: React.Dispatch<React.SetStateAction<Units>>;
 }) {
   return (
     <header className="flex justify-between items-center mb-6">
