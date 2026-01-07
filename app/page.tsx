@@ -14,31 +14,55 @@ export default function HomePage() {
   const [city, setCity] = useState<string>("");
   const [units, setUnits] = useState<"metric" | "imperial">("metric");
 
-  // ✅ CORRECT: hook at top level
+  // ✅ geo hook at top level (correct)
   useGeolocation(setCity);
 
   const { data, loading, error } = useWeather(city, units);
 
   return (
-    <main className="min-h-screen px-4 py-6 max-w-6xl mx-auto">
-      <Header units={units} setUnits={setUnits} />
+    <main
+      className="
+        min-h-screen
+        bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50
+        dark:from-zinc-950 dark:via-slate-900 dark:to-zinc-950
+        px-4 py-6
+      "
+    >
+      <div className="mx-auto max-w-6xl">
+        {/* Header */}
+        <Header units={units} setUnits={setUnits} />
 
-      <SearchBar onSearch={setCity} />
+        {/* Search */}
+        <SearchBar onSearch={setCity} />
 
-      {loading && <Skeleton />}
+        {/* Loading */}
+        {loading && (
+          <div className="mt-6">
+            <Skeleton />
+          </div>
+        )}
 
-      {error && (
-        <p className="text-red-500 text-center mt-4">{error}</p>
-      )}
+        {/* Error */}
+        {error && (
+          <p className="mt-4 text-center text-sm text-red-500">
+            {error}
+          </p>
+        )}
 
-      {data && !loading && (
-        <>
-          <WeatherCard data={data.current} units={units} />
-          <Forecast data={data.forecast} units={units} />
-        </>
-      )}
+        {/* Main Weather Section */}
+        {data && !loading && (
+          <section className="mt-6 grid gap-6">
+            <WeatherCard data={data.current} units={units} />
+            <Forecast data={data.forecast} units={units} />
+          </section>
+        )}
 
-      <CityTable/>
+        {/* Divider */}
+        <div className="my-12 h-px bg-gray-200 dark:bg-gray-800" />
+
+        {/* City Table */}
+        <CityTable units={units} />
+      </div>
     </main>
   );
 }
