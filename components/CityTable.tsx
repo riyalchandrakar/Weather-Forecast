@@ -1,12 +1,48 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { MapPin, CloudSun, Droplets, Wind } from "lucide-react";
+import {
+  MapPin,
+  Droplets,
+  Wind,
+  CloudSun,
+  Sun,
+  Cloud,
+  CloudRain,
+  CloudSnow,
+  CloudFog,
+} from "lucide-react";
 import Pagination from "./Pagination";
 import TableSkeleton from "./TableSkeleton";
 import MobileTableSkeleton from "./MobileTableSkeleton";
 import type { WeatherResponse, Units } from "@/types/weather";
 
+/* ================= WEATHER ICON MAPPER ================= */
+function getWeatherIcon(condition?: string) {
+  switch (condition) {
+    case "Clear":
+      return <Sun size={16} className="text-amber-500 dark:text-amber-400" />;
+
+    case "Clouds":
+      return <Cloud size={16} className="text-slate-500 dark:text-slate-300" />;
+
+    case "Rain":
+    case "Drizzle":
+      return <CloudRain size={16} className="text-sky-600 dark:text-sky-400" />;
+
+    case "Snow":
+      return <CloudSnow size={16} className="text-slate-400 dark:text-slate-200" />;
+
+    case "Haze":
+    case "Mist":
+      return <CloudFog size={16} className="text-stone-500 dark:text-stone-300" />;
+
+    default:
+      return <CloudSun size={16} className="text-sky-500 dark:text-sky-400" />;
+  }
+}
+
+/* ================= CITY LIST ================= */
 const CITIES = [
   "Delhi","Mumbai","Bengaluru","Chennai","Kolkata",
   "Hyderabad","Pune","Ahmedabad","Jaipur","Chandigarh",
@@ -65,12 +101,16 @@ export default function CityTable({ units }: { units: Units }) {
   }, [visibleCities, units]);
 
   return (
-    <section className="mt-13">
-       <div className="mb-5">
-       <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-        City Weather Overview
-       </h3>
-      <div className="mt-1 h-0.5 w-12 bg-sky-400/60"></div>
+    <section className="mt-10">
+      {/* 🍎 Apple-style heading */}
+      <div className="mb-4">
+        <h3 className="
+          text-xs font-semibold tracking-widest uppercase
+          text-gray-500 dark:text-gray-400
+        ">
+          City Weather Overview
+        </h3>
+        <div className="mt-1 h-px w-10 bg-gray-400/60 dark:bg-gray-600/60" />
       </div>
 
       {/* ================= DESKTOP TABLE ================= */}
@@ -120,14 +160,14 @@ export default function CityTable({ units }: { units: Units }) {
 
                   <td className="p-4">
                     <div className="flex items-center gap-2">
-                      <CloudSun size={16} className="text-yellow-500" />
+                      {getWeatherIcon(item.weather?.[0]?.main)}
                       {item.weather?.[0]?.main ?? "—"}
                     </div>
                   </td>
 
                   <td className="p-4">
                     <div className="flex items-center gap-2">
-                      <Droplets size={16} className="text-blue-500" />
+                      <Droplets size={16} className="text-sky-500" />
                       {item.main.humidity}%
                     </div>
                   </td>
@@ -136,7 +176,7 @@ export default function CityTable({ units }: { units: Units }) {
                     <div className="flex items-center gap-2">
                       <Wind size={16} className="text-emerald-500" />
                       {item.wind.speed} {units === "metric" ? "m/s" : "mph"}
-                                       </div>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -168,7 +208,7 @@ export default function CityTable({ units }: { units: Units }) {
                 </div>
 
                 <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
-                  <CloudSun size={16} className="text-yellow-500" />
+                  {getWeatherIcon(item.weather?.[0]?.main)}
                   {item.weather?.[0]?.main}
                 </div>
               </div>
@@ -180,7 +220,7 @@ export default function CityTable({ units }: { units: Units }) {
                 </span>
 
                 <span className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
-                  <Droplets size={14} className="text-blue-500" />
+                  <Droplets size={14} className="text-sky-500" />
                   {item.main.humidity}%
                 </span>
 
