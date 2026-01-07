@@ -14,54 +14,101 @@ export default function HomePage() {
   const [city, setCity] = useState<string>("");
   const [units, setUnits] = useState<"metric" | "imperial">("metric");
 
-  // ✅ geo hook at top level (correct)
   useGeolocation(setCity);
-
   const { data, loading, error } = useWeather(city, units);
 
   return (
-    <main
-      className="
-        min-h-screen
-        bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50
-        dark:from-zinc-950 dark:via-slate-900 dark:to-zinc-950
-        px-4 py-6
-      "
-    >
-      <div className="mx-auto max-w-6xl">
-        {/* Header */}
+    <main className="relative min-h-screen overflow-hidden">
+      {/* 🌤 BACKGROUND LAYERS */}
+      <div className="
+        absolute inset-0 -z-10
+        bg-gradient-to-br
+        from-sky-100 via-blue-50 to-indigo-200
+        dark:from-zinc-950 dark:via-slate-900 dark:to-indigo-950
+      " />
+
+      {/* ☁️ Decorative cloud blobs */}
+      <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-sky-300/30 blur-3xl dark:bg-indigo-900/30" />
+      <div className="absolute top-1/3 -right-32 h-96 w-96 rounded-full bg-indigo-300/30 blur-3xl dark:bg-sky-900/30" />
+      <div className="absolute bottom-0 left-1/4 h-80 w-80 rounded-full bg-blue-200/40 blur-3xl dark:bg-indigo-800/30" />
+
+      {/* 🌍 CONTENT */}
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 py-10 space-y-12">
+        {/* ================= HEADER ================= */}
         <Header units={units} setUnits={setUnits} />
 
-        {/* Search */}
-        <SearchBar onSearch={setCity} />
+        {/* ================= SEARCH ================= */}
+        <div className="flex justify-center">
+          <div className="w-full max-w-xl">
+            <SearchBar onSearch={setCity} />
+          </div>
+        </div>
 
-        {/* Loading */}
+        {/* ================= STATUS ================= */}
         {loading && (
-          <div className="mt-6">
+          <div className="
+            rounded-3xl p-6
+            bg-white/70 dark:bg-white/5
+            backdrop-blur-xl
+            border border-black/5 dark:border-white/10
+            shadow-xl
+          ">
             <Skeleton />
           </div>
         )}
 
-        {/* Error */}
         {error && (
-          <p className="mt-4 text-center text-sm text-red-500">
+          <p className="text-center text-sm text-red-500">
             {error}
           </p>
         )}
 
-        {/* Main Weather Section */}
+        {/* ================= MAIN WEATHER ================= */}
         {data && !loading && (
-          <section className="mt-6 grid gap-6">
-            <WeatherCard data={data.current} units={units} />
-            <Forecast data={data.forecast} units={units} />
+          <section className="
+            grid gap-8
+            md:grid-cols-2
+            items-stretch
+          ">
+            {/* Current */}
+            <div className="
+              h-full rounded-3xl p-4
+              bg-white/70 dark:bg-white/5
+              backdrop-blur-xl
+              border border-black/5 dark:border-white/10
+              shadow-xl
+            ">
+              <WeatherCard data={data.current} units={units} />
+            </div>
+
+            {/* Forecast */}
+            <div className="
+              h-full rounded-3xl p-4
+              bg-white/70 dark:bg-white/5
+              backdrop-blur-xl
+              border border-black/5 dark:border-white/10
+              shadow-xl
+            ">
+              <Forecast data={data.forecast} units={units} />
+            </div>
           </section>
         )}
 
-        {/* Divider */}
-        <div className="my-12 h-px bg-gray-200 dark:bg-gray-800" />
+        {/* ================= DIVIDER ================= */}
+        <div className="flex justify-center">
+          <div className="h-px w-32 bg-gray-300/60 dark:bg-gray-700/60" />
+        </div>
 
-        {/* City Table */}
-        <CityTable units={units} />
+        {/* ================= CITY TABLE ================= */}
+        <section className="
+          rounded-3xl p-4 sm:p-6
+          bg-white/70 dark:bg-white/5
+          backdrop-blur-xl
+          border border-black/5 dark:border-white/10
+          shadow-xl
+        ">
+          <CityTable units={units} />
+        </section>
       </div>
     </main>
   );

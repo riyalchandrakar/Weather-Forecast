@@ -4,14 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import { MapPin, CloudSun, Droplets, Wind } from "lucide-react";
 import Pagination from "./Pagination";
 import TableSkeleton from "./TableSkeleton";
+import MobileTableSkeleton from "./MobileTableSkeleton";
 import type { WeatherResponse, Units } from "@/types/weather";
 
 const CITIES = [
-  "Delhi", "Mumbai", "Bengaluru", "Chennai", "Kolkata",
-  "Hyderabad", "Pune", "Ahmedabad", "Jaipur", "Chandigarh",
-  "Indore", "Bhopal", "Surat", "Vadodara", "Rajkot",
-  "Nagpur", "Noida", "Gurugram", "Faridabad", "Ghaziabad",
-  "Lucknow", "Kanpur", "Patna", "Ranchi", "Gaya",
+  "Delhi","Mumbai","Bengaluru","Chennai","Kolkata",
+  "Hyderabad","Pune","Ahmedabad","Jaipur","Chandigarh",
+  "Indore","Bhopal","Surat","Vadodara","Rajkot",
+  "Nagpur","Noida","Gurugram","Faridabad","Ghaziabad",
+  "Lucknow","Kanpur","Patna","Ranchi","Gaya",
 ];
 
 const ITEMS_PER_PAGE = 5;
@@ -37,9 +38,7 @@ export default function CityTable({ units }: { units: Units }) {
       try {
         const responses = await Promise.all(
           visibleCities.map(async (city) => {
-            const res = await fetch(
-              `/api/weather?city=${city}&units=${units}`
-            );
+            const res = await fetch(`/api/weather?city=${city}&units=${units}`);
             if (!res.ok) return null;
             const json = await res.json();
             return json?.current ?? null;
@@ -63,23 +62,28 @@ export default function CityTable({ units }: { units: Units }) {
     return () => {
       cancelled = true;
     };
-  }, [visibleCities, units]); // ✅ units dependency added
+  }, [visibleCities, units]);
 
   return (
-    <section className="mt-14">
-      <h2 className="mb-4 text-lg font-semibold text-gray-800 dark:text-gray-100">
+    <section className="mt-13">
+       <div className="mb-5">
+       <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
         City Weather Overview
-      </h2>
+       </h3>
+      <div className="mt-1 h-0.5 w-12 bg-sky-400/60"></div>
+      </div>
 
+      {/* ================= DESKTOP TABLE ================= */}
       <div className="
-        overflow-x-auto rounded-2xl
-        bg-gradient-to-br from-sky-100 via-blue-50 to-indigo-100
-        dark:from-slate-900 dark:via-slate-800 dark:to-slate-900
-        border border-white/40 dark:border-white/10
-        shadow-lg backdrop-blur-md
+        hidden md:block overflow-x-auto rounded-3xl
+        bg-gradient-to-br
+        from-white via-sky-100 to-indigo-100
+        dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950
+        border border-black/5 dark:border-white/10
+        shadow-xl backdrop-blur-xl
       ">
         <table className="w-full table-fixed text-sm">
-          <thead className="bg-white/60 dark:bg-black/30">
+          <thead className="bg-white/70 dark:bg-white/5">
             <tr className="text-left text-gray-700 dark:text-gray-300">
               <th className="p-4 w-[22%]">City</th>
               <th className="p-4 w-[14%]">Temp</th>
@@ -96,7 +100,11 @@ export default function CityTable({ units }: { units: Units }) {
               data.map((item) => (
                 <tr
                   key={item.name}
-                  className="border-t border-white/30 dark:border-white/10 hover:bg-white/40 dark:hover:bg-white/5 transition"
+                  className="
+                    border-t border-black/5 dark:border-white/10
+                    hover:bg-black/5 dark:hover:bg-white/5
+                    transition
+                  "
                 >
                   <td className="p-4 font-medium">
                     <div className="flex items-center gap-2">
@@ -128,20 +136,61 @@ export default function CityTable({ units }: { units: Units }) {
                     <div className="flex items-center gap-2">
                       <Wind size={16} className="text-emerald-500" />
                       {item.wind.speed} {units === "metric" ? "m/s" : "mph"}
-                    </div>
+                                       </div>
                   </td>
                 </tr>
               ))}
-
-            {!loading && data.length === 0 && (
-              <tr>
-                <td colSpan={5} className="p-6 text-center text-gray-500">
-                  No data available
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
+      </div>
+
+      {/* ================= MOBILE CARDS ================= */}
+      <div className="md:hidden space-y-4">
+        {loading && <MobileTableSkeleton />}
+
+        {!loading &&
+          data.map((item) => (
+            <div
+              key={item.name}
+              className="
+                rounded-3xl p-4
+                bg-gradient-to-br
+                from-white via-sky-100 to-indigo-100
+                dark:from-slate-950 dark:to-indigo-950
+                border border-black/5 dark:border-white/10
+                shadow-lg backdrop-blur-xl
+              "
+            >
+              <div className="flex justify-between items-center">
+                <div className="flex items-center gap-2 font-semibold text-gray-800 dark:text-gray-100">
+                  <MapPin size={16} className="text-sky-500" />
+                  {item.name}
+                </div>
+
+                <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300">
+                  <CloudSun size={16} className="text-yellow-500" />
+                  {item.weather?.[0]?.main}
+                </div>
+              </div>
+
+              <div className="mt-3 flex justify-between text-sm">
+                <span className="font-bold text-gray-900 dark:text-white">
+                  {Math.round(item.main.temp)}°
+                  {units === "metric" ? "C" : "F"}
+                </span>
+
+                <span className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
+                  <Droplets size={14} className="text-blue-500" />
+                  {item.main.humidity}%
+                </span>
+
+                <span className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
+                  <Wind size={14} className="text-emerald-500" />
+                  {item.wind.speed}
+                </span>
+              </div>
+            </div>
+          ))}
       </div>
 
       {error && <p className="mt-3 text-sm text-red-500">{error}</p>}
